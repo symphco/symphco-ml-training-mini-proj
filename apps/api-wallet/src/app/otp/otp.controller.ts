@@ -1,13 +1,23 @@
-import { Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { OtpService } from './otp.service';
+import { GenerateOtpBodyDto } from './otp.dto';
 
-@Controller('otp')
+@Controller()
 export class OtpController {
-    constructor(private readonly otpservice:OtpService){}
-    @Post()
-    generateOTP(){
-        return this.otpservice.getOTP();
-    }
+  constructor(private readonly otpservice: OtpService) {}
+
+  @Post('/inAppOTP')
+  @HttpCode(200)
+  @UsePipes(ValidationPipe)
+  inAppOTP(@Body() otp: GenerateOtpBodyDto) {
+    console.log(otp);
+    return this.otpservice.generateOTP(otp);
+  }
 }
-    
-    
