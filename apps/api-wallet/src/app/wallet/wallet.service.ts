@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Post } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class WalletService {
   //     // return []
   //   }
 
-  getUsers2() {
+  getUsers2(): Promise<any[] | undefined> {
     return this.databaseService.getQueryResult('getUsers', []);
   }
 

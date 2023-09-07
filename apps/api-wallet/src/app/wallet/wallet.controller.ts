@@ -1,8 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { AuthGuard } from '@nestjs/passport';
+import { LoginAuthDto } from '../../dtos/LoginUser.dto';
 
-@Controller('wallet')
+@Controller()
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
@@ -11,8 +12,8 @@ export class WalletController {
   //     return this.walletService.getUsers();
   //   }
   @UseGuards(AuthGuard('local'))
-  @Get()
-  getWAlletUsers2() {
+  @Get('wallet')
+  getWAlletUsers2(): Promise<any[] | undefined> {
     return this.walletService.getUsers2();
   }
 }
