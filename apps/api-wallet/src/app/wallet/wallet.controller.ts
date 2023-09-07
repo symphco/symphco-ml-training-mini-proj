@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('wallet')
 export class WalletController {
@@ -9,7 +10,7 @@ export class WalletController {
   //   getWAlletUsers() {
   //     return this.walletService.getUsers();
   //   }
-
+  @UseGuards(AuthGuard('local'))
   @Get()
   getWAlletUsers2() {
     return this.walletService.getUsers2();

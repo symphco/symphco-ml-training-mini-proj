@@ -20,9 +20,12 @@ export class WalletService {
   }
 
   async getUser(username: string, password: string) {
-    return this.databaseService.getQueryResult('validateUser', [
+    const hasUser = await this.databaseService.getQueryResult('validateUser', [
       username,
       password,
     ]);
+    console.log(hasUser);
+
+    return hasUser;
   }
 }
