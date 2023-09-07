@@ -11,7 +11,7 @@ export class WalletController {
   //   getWAlletUsers() {
   //     return this.walletService.getUsers();
   //   }
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(AuthGuard('jwt'))
   @Get('wallet')
   getWAlletUsers2(): Promise<any[] | undefined> {
     return this.walletService.getUsers2();

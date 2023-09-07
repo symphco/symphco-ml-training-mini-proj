@@ -8,6 +8,7 @@ import { LocalStrategy } from './local.auth';
 import { ConfigModule } from '@nestjs/config';
 import DB_Config from '../../db_config/db.config';
 import { WalletService } from '../wallet/wallet.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { WalletService } from '../wallet/wallet.service';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, WalletService],
+  providers: [AuthService, LocalStrategy, WalletService, JwtStrategy],
   controllers: [AuthController],
+  exports: [AuthService],
 })
 export class AuthModule {}
