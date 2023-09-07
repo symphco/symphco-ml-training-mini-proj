@@ -3,10 +3,9 @@ import sampleConnectionProvider from './database/providers/db_provider';
 import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './wallet/wallet.module';
 import DB_Config from '../db_config/db.config';
-import { LoginAuthModule } from './auth/login-auth/login-auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './auth/jwt/constants';
 import { PassportModule } from '@nestjs/passport';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +16,7 @@ import { PassportModule } from '@nestjs/passport';
       signOptions: { expiresIn: '1h' }, // Replace with desired expiration time
     }),
     WalletModule,
-    LoginAuthModule,
+    AuthModule,
   ],
   exports: [sampleConnectionProvider],
   controllers: [],

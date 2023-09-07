@@ -18,4 +18,11 @@ export class WalletService {
   getUsers2() {
     return this.databaseService.getQueryResult('getUsers', []);
   }
+
+  async getUser(username: string, password: string) {
+    return this.databaseService.getQueryResult('validateUser', [
+      username,
+      password,
+    ]);
+  }
 }
