@@ -9,16 +9,16 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
   async validateUser(username: string, password: string): Promise<any> {
-    const [{ ckycid }] = await this.walletService.getUser(username, password);
+    const user = await this.walletService.validate(username, password);
     // if (!user) return null;
     // const passwordValid = await bcrypt.compare(password, user.password);
     // if (!user) {
     //   throw new NotAcceptableException('could not find the user');
     // }
-    if (ckycid) {
-      return ckycid;
+    if (!user) {
+      return null;
     }
-    return null;
+    return user;
   }
   async login(user: any) {
     const payload = { username: user.username, sub: user._id };
