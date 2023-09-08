@@ -5,6 +5,7 @@ import { WalletModule } from './wallet/wallet.module';
 import DB_Config from '../db_config/db.config';
 import { OtpModule } from './otp/otp.module';
 import { AuthModule } from './auth/auth.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
     WalletModule,
     OtpModule,
     AuthModule,
+    TransactionsModule,
   ],
   exports: [sampleConnectionProvider],
   controllers: [],
