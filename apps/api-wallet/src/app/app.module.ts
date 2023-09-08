@@ -4,9 +4,15 @@ import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './wallet/wallet.module';
 import DB_Config from '../db_config/db.config';
 import { OtpModule } from './otp/otp.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forFeature(DB_Config), WalletModule, OtpModule],
+  imports: [
+    ConfigModule.forFeature(DB_Config),
+    WalletModule,
+    OtpModule,
+    AuthModule,
+  ],
   exports: [sampleConnectionProvider],
   controllers: [],
   providers: [sampleConnectionProvider],

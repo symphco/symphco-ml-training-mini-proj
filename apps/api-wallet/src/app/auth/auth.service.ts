@@ -10,7 +10,7 @@ export class AuthService {
   ) {}
   async validateUser(username: string, password: string): Promise<any | null> {
     const user = await this.walletService.validate(username, password);
-    // if (!user) return null;
+    if (!user) return null;
     // const passwordValid = await bcrypt.compare(password, user.password);
     // if (!user) {
     //   throw new NotAcceptableException('could not find the user');
