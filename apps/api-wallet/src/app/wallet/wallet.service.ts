@@ -21,18 +21,15 @@ export class WalletService {
     const hasUser = await this.databaseService.getQueryResult('getUserById', [
       id,
     ]);
-    console.log(hasUser);
-
-    // if (!hasUser) throw new BadRequestException();
+    if (!hasUser) throw new BadRequestException();
     return hasUser;
   }
 
-  async validate(username: string, password: string) {
+  async validate(username: string, password: string): Promise<number> {
     const [{ ckycid }] = await this.databaseService.getQueryResult(
       'validateUser',
       [username, password]
     );
-
     return ckycid;
   }
 }
