@@ -13,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('wallet')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
+  constructor(private readonly walletService: WalletService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get()

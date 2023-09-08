@@ -4,11 +4,11 @@ import { AuthService } from './auth.service';
 import { WalletModule } from '../wallet/wallet.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { LocalStrategy } from './local.auth';
+import { LocalStrategy } from './jwt-config/local.auth';
 import { ConfigModule } from '@nestjs/config';
 import DB_Config from '../../db_config/db.config';
 import { WalletService } from '../wallet/wallet.service';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './jwt-config/jwt.strategy';
 
 @Module({
   imports: [
