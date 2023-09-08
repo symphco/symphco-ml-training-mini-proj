@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import DB_Config from '../../db_config/db.config';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtStrategy } from './jwt-config/jwt.strategy';
+import { TransactionsService } from '../transactions/transactions.service';
 
 @Module({
   imports: [
@@ -20,7 +21,13 @@ import { JwtStrategy } from './jwt-config/jwt.strategy';
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, WalletService, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    WalletService,
+    JwtStrategy,
+    TransactionsService,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })
