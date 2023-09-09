@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { GenerateOtpBodyDto } from './otp.dto';
+import { GenerateOtpBodyDto, GenerateSMSBodyDto } from './otp.dto';
 import { catchError, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 
@@ -32,5 +32,35 @@ export class OtpService {
           throw new ForbiddenException('Something went wrong');
         })
       );
+  }
+  async sendSMS(payloadLoad: GenerateSMSBodyDto) {
+    const sms_url = process.env.SMS_BASEURL;
+    const payloadForsendSMS = {
+      username: process.env.SMS_USERNAME,
+      password: process.env.SMS_PASSWORD,
+      ...payloadLoad,
+      //msg: 'Testing SMS',
+      sender: 'MLWALLET',
+    };
+    console.log('SMS service payload', payloadForsendSMS);
+    console.log('SMS service payload', payloadForsendSMS);
+    return this.httpService
+      .post(sms_url + '/sendSMS', payloadForsendSMS)
+
+      .pipe(
+        map((res) => {
+          return res.data;
+        })
+      )
+
+      .pipe(
+        catchError(() => {
+          console.log('error', ForbiddenException);
+          throw new ForbiddenException('Something went wrong');
+        })
+      );
+  }
+  gethello(): string {
+    return 'hello';
   }
 }

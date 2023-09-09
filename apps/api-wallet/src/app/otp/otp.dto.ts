@@ -19,3 +19,10 @@ export class GenerateOtpBodyDto {
   signature: string;
   timelimit: number;
 }
+
+export class GenerateSMSBodyDto {
+  @IsNotEmpty()
+  mobileno: string;
+  @IsNotEmpty()
+  msg:string
+}
