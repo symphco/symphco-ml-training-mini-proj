@@ -6,13 +6,13 @@ import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Post()
   saveTrans() {
     return this.transactionService.save();
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Post('add')
   insertTrans(@Body() trans_Details: TransactionDetailsDto) {
     return this.transactionService.insert(trans_Details);
