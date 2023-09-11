@@ -20,4 +20,9 @@ export class TransactionsController {
   insertTrans(@Body() trans_Details: TransactionDetailsDto): object {
     return this.transactionService.insert(trans_Details);
   }
+
+  @Get('get-transactions')
+  getTransHistory() {
+    return this.transactionService.getHistory();
+  }
 }

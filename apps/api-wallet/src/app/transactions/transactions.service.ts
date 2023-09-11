@@ -39,4 +39,12 @@ export class TransactionsService {
     ]);
     return u_num;
   }
+  // history_transaction
+  getHistory() {
+    const history = this.databaseService.getQueryResult(
+      'getAllHistoryTrans',
+      []
+    );
+    return history;
+  }
 }
