@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
-import { DbTransactions } from '../utils/transactions/transactions.util';
+import { DbTransactions } from '../utils/transactions/insertTransaction.util';
 @Injectable()
 export class TransactionsService {
   constructor(

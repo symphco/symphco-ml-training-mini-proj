@@ -18,7 +18,7 @@ import { TransactionsService } from '../transactions/transactions.service';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: process.env.JWT_TOKEN_EXP },
     }),
   ],
   providers: [

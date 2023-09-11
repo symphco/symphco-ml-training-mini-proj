@@ -14,12 +14,6 @@ import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  @Post()
-  saveTrans() {
-    return this.transactionService.save();
-  }
-
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
   @Post('add')
