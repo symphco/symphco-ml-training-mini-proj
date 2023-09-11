@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
@@ -12,9 +20,10 @@ export class TransactionsController {
     return this.transactionService.save();
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
+  @UsePipes(ValidationPipe)
   @Post('add')
-  insertTrans(@Body() trans_Details: TransactionDetailsDto) {
+  insertTrans(@Body() trans_Details: TransactionDetailsDto): object {
     return this.transactionService.insert(trans_Details);
   }
 }

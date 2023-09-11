@@ -1,12 +1,14 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 
 export class TransactionDetailsDto {
   @IsNotEmpty()
   @IsString()
+  @Length(11)
   sendermobileno: string;
 
   @IsNotEmpty()
   @IsString()
+  @Length(11)
   receivermobileno: string;
 
   @IsNotEmpty()

@@ -51,11 +51,11 @@ export class DatabaseService {
     }
     return dbConfig;
   }
-  //   public async startTransaction(): Promise<PoolConnection> {
-  //     const connection = await this.pool.getConnection();
-  //     await connection.beginTransaction();
-  //     return connection;
-  //   }
+  public async startTransaction(): Promise<PoolConnection> {
+    const connection = await this.pool.getConnection();
+    await connection.beginTransaction();
+    return connection;
+  }
 
   public async getTransactionalQueryResult(
     connection: PoolConnection,
