@@ -1,10 +1,10 @@
 import { ConfigType } from '@nestjs/config';
 import { DatabaseService } from '../services/db_service';
-import DBConfig from 'apps/api-wallet/src/db_config/db.config';
+import WalletDBConfig from 'apps/api-wallet/src/db_config/db.config';
 
 const walletDbConnectionProvider = {
   provide: 'walletmini',
-  useFactory: async (dbConfig: ConfigType<typeof DBConfig>) =>
+  useFactory: async (dbConfig: ConfigType<typeof WalletDBConfig>) =>
     new DatabaseService(
       dbConfig.connectionLimit,
       dbConfig.host,
@@ -13,6 +13,6 @@ const walletDbConnectionProvider = {
       dbConfig.name,
       dbConfig.socketPath
     ),
-  inject: [DBConfig.KEY],
+  inject: [WalletDBConfig.KEY],
 };
 export default walletDbConnectionProvider;
