@@ -9,6 +9,9 @@ import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.src.env',
+    }),
     ConfigModule.forFeature(DB_Config),
     WalletModule,
     OtpModule,
