@@ -17,7 +17,7 @@ export class TransactionsController {
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
   @Post('add')
-  insertTrans(@Body() trans_Details: TransactionDetailsDto): object {
+  insertTrans(@Body() trans_Details: TransactionDetailsDto): Promise<any> {
     return this.transactionService.insert(trans_Details);
   }
 

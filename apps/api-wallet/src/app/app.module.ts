@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import sampleConnectionProvider from './database/providers/db_provider';
+import walletDbConnectionProvider from './database/providers/db_provider';
 import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './wallet/wallet.module';
 import DB_Config from '../db_config/db.config';
@@ -18,8 +18,8 @@ import { TransactionsModule } from './transactions/transactions.module';
     AuthModule,
     TransactionsModule,
   ],
-  exports: [sampleConnectionProvider],
+  exports: [walletDbConnectionProvider],
   controllers: [],
-  providers: [sampleConnectionProvider],
+  providers: [walletDbConnectionProvider],
 })
 export class AppModule {}

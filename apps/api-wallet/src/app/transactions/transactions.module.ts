@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 import { ConfigModule } from '@nestjs/config';
-import sampleConnectionProvider from '../database/providers/db_provider';
 import DB_Config from '../../db_config/db.config';
+import walletDbConnectionProvider from '../database/providers/db_provider';
 
 @Module({
   imports: [ConfigModule.forFeature(DB_Config)],
-  exports: [sampleConnectionProvider],
+  exports: [walletDbConnectionProvider],
   controllers: [TransactionsController],
-  providers: [TransactionsService, sampleConnectionProvider],
+  providers: [TransactionsService, walletDbConnectionProvider],
 })
 export class TransactionsModule {}

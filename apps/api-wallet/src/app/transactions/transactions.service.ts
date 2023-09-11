@@ -13,7 +13,7 @@ export class TransactionsService {
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
 
-  async insert(trans_Details: TransactionDetailsDto) {
+  async insert(trans_Details: TransactionDetailsDto): Promise<any> {
     const {
       sendermobileno,
       receivermobileno,
@@ -33,7 +33,7 @@ export class TransactionsService {
     return user;
   }
 
-  async getMobile(mobile_num: string) {
+  async getMobile(mobile_num: string): Promise<string> {
     const u_num = await this.databaseService.getQueryResult('getMobileNums', [
       mobile_num,
     ]);
