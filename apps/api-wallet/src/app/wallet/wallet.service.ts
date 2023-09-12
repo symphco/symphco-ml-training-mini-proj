@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
 
 @Injectable()
@@ -20,7 +25,7 @@ export class WalletService {
     const hasUser = await this.databaseService.getQueryResult('getUserById', [
       id,
     ]);
-    if (!hasUser) throw new BadRequestException();
+    if (!hasUser) throw new UnauthorizedException();
     return hasUser;
   }
 

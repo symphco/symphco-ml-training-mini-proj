@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import DB_Config from '../../db_config/db.config';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtStrategy } from './jwt-config/jwt.strategy';
+import { TransactionsService } from '../transactions/transactions.service';
 
 @Module({
   imports: [
@@ -17,10 +18,16 @@ import { JwtStrategy } from './jwt-config/jwt.strategy';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: process.env.JWT_TOKEN_EXP },
     }),
   ],
-  providers: [AuthService, LocalStrategy, WalletService, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    WalletService,
+    JwtStrategy,
+    TransactionsService,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })
