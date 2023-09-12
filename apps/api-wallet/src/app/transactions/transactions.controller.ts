@@ -22,7 +22,7 @@ export class TransactionsController {
   }
 
   @Get('get-transactions')
-  getTransHistory() {
+  getTransHistory(): Promise<any[] | undefined> {
     return this.transactionService.getHistory();
   }
 }

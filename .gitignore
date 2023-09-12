@@ -37,4 +37,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-**.env
+/apps/api-wallet/src/app/.env
