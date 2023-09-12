@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -32,8 +33,10 @@ export class TransactionsController {
   @UseGuards(AuthGuard('jwt'))
   @Get('get-transactions/:id')
   getTransHistoryByUser(
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 5
   ): Promise<any | undefined> {
-    return this.transactionService.getHistoryByUser(id);
+    return this.transactionService.getHistoryByUser(id, page, limit);
   }
 }

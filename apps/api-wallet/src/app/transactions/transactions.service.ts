@@ -48,11 +48,30 @@ export class TransactionsService {
     return history;
   }
 
-  async getHistoryByUser(id: number): Promise<any | undefined> {
+  async getHistoryByUser(
+    id: number,
+    page: number,
+    limit: number
+  ): Promise<any | undefined> {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
     const u_history = await this.databaseService.getQueryResult(
       'history_transaction',
       [id]
     );
-    return u_history;
+    const paginatedTransactions = u_history.slice(startIndex, endIndex);
+
+    const nextPage = page + 1;
+    const hasNextPage = endIndex < u_history.length;
+
+    return {
+      totalTransactions: u_history.length,
+      currentPage: page,
+      transactions: paginatedTransactions,
+      nextPage: hasNextPage
+        ? `/transactions/get-transactions/${id}/?page=${nextPage}&limit=${limit}`
+        : null,
+    };
   }
 }
