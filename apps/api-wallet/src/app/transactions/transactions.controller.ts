@@ -18,16 +18,18 @@ export class TransactionsController {
 
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
-  @Post('add')
+  @Post('add-transactions')
   insertTrans(@Body() trans_Details: TransactionDetailsDto): Promise<any> {
     return this.transactionService.insert(trans_Details);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('get-transactions')
   getTransHistory(): Promise<any[] | undefined> {
     return this.transactionService.getHistory();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('get-transactions/:id')
   getTransHistoryByUser(
     @Param('id', ParseIntPipe) id: number

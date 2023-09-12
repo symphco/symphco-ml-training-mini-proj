@@ -11,9 +11,9 @@ export class WalletService {
   constructor(
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
+
   getUsers() {
     const rc = this.databaseService.getQueryResult('getwallet_user', [1]);
-    
     return rc;
   }
 
