@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
@@ -48,11 +49,24 @@ export class TransactionsService {
     return history;
   }
 
-  async getHistoryByUser(id: number): Promise<any | undefined> {
+  async getHistoryByUser(userID: number): Promise<any | undefined> {
     const u_history = await this.databaseService.getQueryResult(
       'history_transaction',
-      [id]
+      [userID]
     );
     return u_history;
+  }
+
+  async getSpecificTrans(
+    userID: number,
+    transID: number
+  ): Promise<any | undefined> {
+    const [spec_trans] = await this.databaseService.getQueryResult(
+      'getSpecificTrans',
+      [userID, transID]
+    );
+    if (!spec_trans) throw new NotFoundException();
+
+    return spec_trans;
   }
 }
