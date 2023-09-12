@@ -8,6 +8,7 @@ export class AuthService {
     private readonly walletService: WalletService,
     private jwtService: JwtService
   ) {}
+
   async validateUser(username: string, password: string): Promise<any | null> {
     const user = await this.walletService.validate(username, password);
     if (!user) return null;
