@@ -1,22 +1,11 @@
 import { IsNotEmpty, isNotEmpty } from 'class-validator';
 
-export class GenerateOtpDto {
-  username: string;
-  password: string;
-  mobileno: string;
-  deviceid: string;
-  date: string;
-  serviceType: string;
-  signature?: string;
-  timelimit: number;
-}
-
 export class GenerateOtpBodyDto {
-  mobileno: string;
-  deviceid: string;
-  date: string;
-  serviceType: string;
-  signature: string;
+  Mobileno: string;
+  DeviceID: string;
+  Date: string;
+  ServiceType: string;
+  Signature: string;
   timelimit: number;
 }
 
@@ -24,5 +13,14 @@ export class GenerateSMSBodyDto {
   @IsNotEmpty()
   mobileno: string;
   @IsNotEmpty()
-  msg:string
+  msg: string;
+}
+
+export class ValidateOtpBodyDTO {
+  mobile_no: string;
+  deviceID: string;
+  pin: string;
+  service_type: string;
+  timelimit: string;
+  token: number;
 }
