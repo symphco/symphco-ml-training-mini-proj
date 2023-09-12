@@ -8,6 +8,7 @@ export class WalletService {
   ) {}
   getUsers() {
     const rc = this.databaseService.getQueryResult('getwallet_user', [1]);
+    
     return rc;
   }
 
