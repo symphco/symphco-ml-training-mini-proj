@@ -1,4 +1,4 @@
-import { DatabaseService } from '../../database/services/db_service';
+import { DatabaseService } from './db_service';
 
 export class DbTransactions {
   public static async insertTransaction(
@@ -10,6 +10,7 @@ export class DbTransactions {
     serviceType: string
   ): Promise<any> {
     const connection = await databaseService.startTransaction();
+
     try {
       const user = await databaseService.getQueryResult('insert_Transaction', [
         senderMobileNo,
