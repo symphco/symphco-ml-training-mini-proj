@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   UseGuards,
   UsePipes,
@@ -24,5 +26,12 @@ export class TransactionsController {
   @Get('get-transactions')
   getTransHistory(): Promise<any[] | undefined> {
     return this.transactionService.getHistory();
+  }
+
+  @Get('get-transactions/:id')
+  getTransHistoryByUser(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<any | undefined> {
+    return this.transactionService.getHistoryByUser(id);
   }
 }

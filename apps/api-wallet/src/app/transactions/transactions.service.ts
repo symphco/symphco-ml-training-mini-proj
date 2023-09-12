@@ -47,4 +47,12 @@ export class TransactionsService {
     );
     return history;
   }
+
+  async getHistoryByUser(id: number): Promise<any | undefined> {
+    const u_history = await this.databaseService.getQueryResult(
+      'history_transaction',
+      [id]
+    );
+    return u_history;
+  }
 }
