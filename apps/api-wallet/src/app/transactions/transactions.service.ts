@@ -60,6 +60,7 @@ export class TransactionsService {
       'history_transaction',
       [id]
     );
+
     const paginatedTransactions = u_history.slice(startIndex, endIndex);
 
     const nextPage = page + 1;
