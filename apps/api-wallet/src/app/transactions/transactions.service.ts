@@ -2,11 +2,13 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 import { DbTransactions } from '../database/services/db_transaction.util';
+import { NotFoundError } from 'rxjs';
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -60,6 +62,8 @@ export class TransactionsService {
       'history_transaction',
       [id]
     );
+
+    if (!u_history.length) throw new NotFoundException();
 
     const paginatedTransactions = u_history.slice(startIndex, endIndex);
 

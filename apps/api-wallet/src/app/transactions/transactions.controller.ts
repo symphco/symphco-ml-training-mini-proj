@@ -30,7 +30,7 @@ export class TransactionsController {
     return this.transactionService.getHistory();
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'))
   @Get('get-transactions/:id')
   getTransHistoryByUser(
     @Param('id', ParseIntPipe) id: number,
