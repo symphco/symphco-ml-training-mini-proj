@@ -1,23 +1,47 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { GenerateOtpBodyDto } from './otp.dto';
+import {
+  GenerateOtpBodyDto,
+  GenerateSMSBodyDto,
+  ValidateOtpBodyDTO,
+} from './otp.dto';
 import { catchError, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { generateSignature } from '../utils/encrypt_service';
 
+const username = process.env.OTP_USERNAME;
+const password = process.env.OTP_PASSWORD;
+const otp_url = process.env.OTP_BASEURL;
 @Injectable()
 export class OtpService {
   constructor(private httpService: HttpService) {}
 
   async generateOTP(payloadLoad: GenerateOtpBodyDto) {
-    const otp_url = process.env.OTP_BASEURL;
+    const signature =
+      username +
+      '|' +
+      password +
+      '|' +
+      payloadLoad.Mobileno +
+      '|' +
+      payloadLoad.DeviceID +
+      '|' +
+      payloadLoad.Date +
+      '|' +
+      payloadLoad.ServiceType +
+      '|' +
+      payloadLoad.timelimit;
+    console.log(typeof signature);
+    const generated = generateSignature(signature);
+    if (payloadLoad.Signature !== generated) {
+      console.log('not equal');
+      return;
+    }
     const payloadForOtpService = {
-      username: process.env.OTP_USERNAME,
-      password: process.env.OTP_PASSWORD,
+      username,
+      password,
       ...payloadLoad,
-      Signature:
-        'f5678d5751a1732a2485b92ecdf0bf83bfe1375e4f6ff99a4cbb17d5a9df8c656abb9bae4c9d9680b2df6590a58ab48257277fe124743bd6c9a615eae9627717',
+      Signature: generated,
     };
-    console.log('Otp service payload', payloadForOtpService);
-    console.log('Otp service payload', payloadForOtpService);
     return this.httpService
       .post(otp_url + '/GetDetails', payloadForOtpService)
 
@@ -29,6 +53,46 @@ export class OtpService {
 
       .pipe(
         catchError(() => {
+          throw new ForbiddenException('Something went wrong');
+        })
+      );
+  }
+  async validateOTP(payloadLoad: ValidateOtpBodyDTO) {
+    return this.httpService
+      .post(otp_url + '/ValidateOTP', payloadLoad)
+
+      .pipe(
+        map((res) => {
+          return res.data;
+        })
+      )
+
+      .pipe(
+        catchError(() => {
+          throw new ForbiddenException('Something went wrong');
+        })
+      );
+  }
+  async sendSMS(payloadLoad: GenerateSMSBodyDto) {
+    const sms_url = process.env.SMS_BASEURL;
+    const payloadForsendSMS = {
+      username: process.env.SMS_USERNAME,
+      password: process.env.SMS_PASSWORD,
+      ...payloadLoad,
+      sender: 'MLWALLET',
+    };
+    return this.httpService
+      .post(sms_url + '/sendSMS', payloadForsendSMS)
+
+      .pipe(
+        map((res) => {
+          return res.data;
+        })
+      )
+
+      .pipe(
+        catchError(() => {
+          console.log('error', ForbiddenException);
           throw new ForbiddenException('Something went wrong');
         })
       );
