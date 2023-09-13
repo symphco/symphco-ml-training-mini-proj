@@ -30,13 +30,21 @@ export class TransactionsController {
     return this.transactionService.getHistory();
   }
 
-  // @UseGuards(AuthGuard('jwt'))
-  @Get('get-transactions/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('get-transactions/:userID')
   getTransHistoryByUser(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 2
+    @Param('userID', ParseIntPipe) userID: number
   ): Promise<any | undefined> {
-    return this.transactionService.getHistoryByUser(id, page, limit);
+    return this.transactionService.getHistoryByUser(userID);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('get-transactions/:userID/:transID')
+  getSpecificTrans(
+    @Param('userID', ParseIntPipe) userID: number,
+    @Param('transID', ParseIntPipe) transID: number
+  ): Promise<any | undefined> {
+    return this.transactionService.getSpecificTrans(userID, transID);
+
   }
 }
