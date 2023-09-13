@@ -67,15 +67,16 @@ export class TransactionsService {
 
     const paginatedTransactions = u_history.slice(startIndex, endIndex);
 
-    const nextPage = page + 1;
+    let nextPage: number = 1;
+
     const hasNextPage = endIndex < u_history.length;
 
     return {
       totalTransactions: u_history.length,
-      currentPage: page,
+      currentPage: +page++,
       transactions: paginatedTransactions,
       nextPage: hasNextPage
-        ? `/transactions/get-transactions/${id}/?page=${nextPage}&limit=${limit}`
+        ? `/transactions/get-transactions/${id}/?page=${page}&limit=${limit}`
         : null,
     };
   }

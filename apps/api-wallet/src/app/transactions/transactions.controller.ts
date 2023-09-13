@@ -35,7 +35,7 @@ export class TransactionsController {
   getTransHistoryByUser(
     @Param('id', ParseIntPipe) id: number,
     @Query('page') page: number = 1,
-    @Query('limit') limit: number = 5
+    @Query('limit') limit: number = 2
   ): Promise<any | undefined> {
     return this.transactionService.getHistoryByUser(id, page, limit);
   }
