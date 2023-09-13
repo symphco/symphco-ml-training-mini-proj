@@ -67,8 +67,6 @@ export class TransactionsService {
 
     const paginatedTransactions = u_history.slice(startIndex, endIndex);
 
-    let nextPage: number = 1;
-
     const hasNextPage = endIndex < u_history.length;
 
     return {
