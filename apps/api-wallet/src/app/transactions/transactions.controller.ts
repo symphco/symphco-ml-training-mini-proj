@@ -30,10 +30,19 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('get-transactions/:id')
+  @Get('get-transactions/:userID')
   getTransHistoryByUser(
-    @Param('id', ParseIntPipe) id: number
+    @Param('userID', ParseIntPipe) userID: number
   ): Promise<any | undefined> {
-    return this.transactionService.getHistoryByUser(id);
+    return this.transactionService.getHistoryByUser(userID);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('get-transactions/:userID/:transID')
+  getSpecificTrans(
+    @Param('userID', ParseIntPipe) userID: number,
+    @Param('transID', ParseIntPipe) transID: number
+  ): Promise<any | undefined> {
+    return this.transactionService.getSpecificTrans(userID, transID);
   }
 }
