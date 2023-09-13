@@ -30,8 +30,8 @@ export class OtpService {
       payloadLoad.ServiceType +
       '|' +
       payloadLoad.timelimit;
-    console.log(typeof signature);
     const generated = generateSignature(signature);
+    console.log('Generated', generated);
     if (payloadLoad.Signature !== generated) {
       console.log('not equal');
       return;
@@ -57,22 +57,23 @@ export class OtpService {
         })
       );
   }
-  async validateOTP(payloadLoad: ValidateOtpBodyDTO) {
-    return this.httpService
-      .post(otp_url + '/ValidateOTP', payloadLoad)
+  // async validateOTP(payloadLoad: ValidateOtpBodyDTO) {
+  //   console.log('hatdog', payloadLoad);
+  //   return this.httpService
+  //     .post(otp_url + '/ValidateOTP', payloadLoad)
+  //     .pipe(
+  //       map((res) => {
+  //         console.log('/ValidateOTP', res);
+  //         return res.data;
+  //       })
+  //     )
 
-      .pipe(
-        map((res) => {
-          return res.data;
-        })
-      )
-
-      .pipe(
-        catchError(() => {
-          throw new ForbiddenException('Something went wrong');
-        })
-      );
-  }
+  //     .pipe(
+  //       catchError(() => {
+  //         throw new ForbiddenException('Something went wrong');
+  //       })
+  //     );
+  // }
   async sendSMS(payloadLoad: GenerateSMSBodyDto) {
     const sms_url = process.env.SMS_BASEURL;
     const payloadForsendSMS = {

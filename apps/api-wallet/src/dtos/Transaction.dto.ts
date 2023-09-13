@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Length,
+  isNotEmpty,
+} from 'class-validator';
 
 export class TransactionDetailsDto {
   @IsNotEmpty()
@@ -22,4 +29,28 @@ export class TransactionDetailsDto {
   @IsNotEmpty()
   @IsString()
   servicetype: string;
+
+  @IsNotEmpty()
+  @IsString()
+  otp: string;
+
+  @IsNotEmpty()
+  @IsString()
+  Deviceid: string;
+
+  @IsNotEmpty()
+  @IsString()
+  Date: string;
+
+  @IsNotEmpty()
+  @IsString()
+  Signature: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  timelimit: number;
+
+  @IsNotEmpty()
+  @IsString()
+  token: string;
 }

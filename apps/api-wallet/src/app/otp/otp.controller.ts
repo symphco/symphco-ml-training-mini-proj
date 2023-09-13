@@ -30,7 +30,7 @@ export class OtpController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   validateOTP(@Body() validateOtp: ValidateOtpBodyDTO) {
-    console.log(validateOtp);
+    console.log('/validateInAppOTP', validateOtp);
     return this.otpservice.validateOTP(validateOtp);
   }
 

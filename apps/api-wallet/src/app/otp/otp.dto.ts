@@ -21,6 +21,6 @@ export class ValidateOtpBodyDTO {
   deviceID: string;
   pin: string;
   service_type: string;
-  timelimit: string;
-  token: number;
+  timelimit: number;
+  token: string;
 }

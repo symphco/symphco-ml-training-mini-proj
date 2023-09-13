@@ -10,6 +10,7 @@ import DB_Config from '../../db_config/db.config';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtStrategy } from './jwt-config/jwt.strategy';
 import { TransactionsService } from '../transactions/transactions.service';
+import { OtpService } from '../otp/otp.service';
 
 @Module({
   imports: [
