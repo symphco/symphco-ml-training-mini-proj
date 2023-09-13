@@ -51,7 +51,7 @@ export class TransactionsService {
   }
 
   async getHistoryByUser(
-    id: number,
+    userID: number,
     page: number,
     limit: number
   ): Promise<any | undefined> {
@@ -60,7 +60,7 @@ export class TransactionsService {
 
     const u_history = await this.databaseService.getQueryResult(
       'history_transaction',
-      [id]
+      [userID]
     );
 
     if (!u_history.length) throw new NotFoundException();
@@ -74,8 +74,21 @@ export class TransactionsService {
       currentPage: +page++,
       transactions: paginatedTransactions,
       nextPage: hasNextPage
-        ? `/transactions/get-transactions/${id}/?page=${page}&limit=${limit}`
+        ? `/transactions/get-transactions/${userID}/?page=${page}&limit=${limit}`
         : null,
     };
+  }
+
+  async getSpecificTrans(
+    userID: number,
+    transID: number
+  ): Promise<any | undefined> {
+    const [spec_trans] = await this.databaseService.getQueryResult(
+      'getSpecificTrans',
+      [userID, transID]
+    );
+    if (!spec_trans) throw new NotFoundException();
+
+    return spec_trans;
   }
 }
