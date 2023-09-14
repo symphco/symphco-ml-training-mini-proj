@@ -53,6 +53,7 @@ export class TransactionsService {
   async getHistoryByUser(
     userID: number,
     page: number,
+    // limit: number,
     limit: number
   ): Promise<any | undefined> {
     const startIndex = (page - 1) * limit;
@@ -74,7 +75,7 @@ export class TransactionsService {
       currentPage: +page++,
       transactions: paginatedTransactions,
       nextPage: hasNextPage
-        ? `/transactions/get-transactions/${userID}/?page=${page}&limit=${limit}`
+        ? `/transactions/get-transactions-and-paginate/${userID}/?page=${page}&limit=${limit}`
         : null,
     };
   }

@@ -31,13 +31,22 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('get-transactions/:userID')
+  @Get('get-transactions-and-paginate/:userID')
   getTransHistoryByUser(
     @Param('userID', ParseIntPipe) userID: number,
+    // @Body() queryLimit: any,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 3
   ): Promise<any | undefined> {
-    return this.transactionService.getHistoryByUser(userID, page, limit);
+    // const { pageLimit } = queryLimit;
+    // console.log(pageLimit);
+
+    return this.transactionService.getHistoryByUser(
+      userID,
+      page,
+      // pageLimit,
+      limit
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
