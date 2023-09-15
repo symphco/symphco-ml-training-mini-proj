@@ -8,6 +8,7 @@ import {
 import { DatabaseService } from '../database/services/db_service';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 import { DbTransactions } from '../database/services/db_transaction.util';
+import { NotFoundError } from 'rxjs';
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -49,12 +50,33 @@ export class TransactionsService {
     return history;
   }
 
-  async getHistoryByUser(userID: number): Promise<any | undefined> {
-    const u_history = await this.databaseService.getQueryResult(
+  async getHistoryByUser(
+    userID: number,
+    page: number,
+    limit: number
+  ): Promise<any | undefined> {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const userHistory = await this.databaseService.getQueryResult(
       'history_transaction',
       [userID]
     );
-    return u_history;
+
+    if (!userHistory.length) throw new NotFoundException();
+
+    const paginatedTransactions = userHistory.slice(startIndex, endIndex);
+
+    const hasNextPage = endIndex < userHistory.length;
+
+    return {
+      totalTransactions: userHistory.length,
+      currentPage: Number(page),
+      transactions: paginatedTransactions,
+      nextPage: hasNextPage
+        ? `/transactions/get-transactions-and-paginate/${userID}/?page=${++page}&limit=${limit}`
+        : null,
+    };
   }
 
   async getSpecificTrans(

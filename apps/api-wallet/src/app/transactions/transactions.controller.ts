@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -12,6 +13,7 @@ import {
 import { TransactionsService } from './transactions.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
+import { TransHistoryPaginationDto } from '../../dtos/TransHistoryPagination.dto';
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
@@ -30,11 +32,13 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('get-transactions/:userID')
+  @Get('get-transactions-and-paginate/:userID')
   getTransHistoryByUser(
-    @Param('userID', ParseIntPipe) userID: number
+    @Param('userID', ParseIntPipe) userID: number,
+    @Query() query: TransHistoryPaginationDto
   ): Promise<any | undefined> {
-    return this.transactionService.getHistoryByUser(userID);
+    const { page, limit } = query;
+    return this.transactionService.getHistoryByUser(userID, page, limit);
   }
 
   @UseGuards(AuthGuard('jwt'))
