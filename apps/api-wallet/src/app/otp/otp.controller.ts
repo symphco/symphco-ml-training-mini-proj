@@ -18,12 +18,10 @@ import {
 @Controller()
 export class OtpController {
   constructor(private readonly otpservice: OtpService) {}
-
   @Post('/inAppOTP')
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   inAppOTP(@Body() otp: GenerateOtpBodyDto) {
-    console.log(otp);
     return this.otpservice.generateOTP(otp);
   }
 
@@ -31,7 +29,6 @@ export class OtpController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   validateOTP(@Body() validateOtp: ValidateOtpBodyDTO) {
-    console.log('/validateInAppOTP', validateOtp);
     return this.otpservice.validateOTP(validateOtp);
   }
 
@@ -39,7 +36,6 @@ export class OtpController {
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   sendSMS(@Body() sms: GenerateSMSBodyDto) {
-    console.log('sms', sms);
     return this.otpservice.sendSMS(sms);
   }
 }

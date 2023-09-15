@@ -15,9 +15,8 @@ import {
   ValidateOtpBodyDTO,
 } from '../otp/otp.dto';
 import axios from 'axios';
+import { config } from '../../constant/config';
 
-const otp_url = process.env.OTP_BASEURL;
-const sms_url = process.env.SMS_BASEURL;
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -36,6 +35,7 @@ export class TransactionsService {
       timelimit,
       tokens,
     } = trans_Details;
+
     const validatedetails: ValidateOtpBodyDTO = {
       mobile_no: sendermobileno,
       deviceID: deviceID,
@@ -44,20 +44,18 @@ export class TransactionsService {
       timelimit: timelimit,
       token: tokens,
     };
+
     const { data: validateResponse } = await axios.post(
-      otp_url + '/ValidateOTP',
+      config.OTP_URL + '/ValidateOTP',
       validatedetails
     );
-    const {
-      code: valCode,
-      message: valMessage,
-      otp: valOTP,
-      name: valName,
-      token: valToken,
-    } = validateResponse;
+
+    const { code: valCode, message: valMessage } = validateResponse;
+
     if (valCode !== 1) {
       throw new HttpException(valMessage, HttpStatus.FORBIDDEN);
     }
+
     const transactionResponse = await DbTransactions.insertTransaction(
       this.databaseService,
       sendermobileno,
@@ -66,31 +64,37 @@ export class TransactionsService {
       servicefee,
       servicetype
     );
+
     const { respcode, respmessage: transMessage } = transactionResponse[0];
-    if (respcode !== 1) {
+
+    const successTxn = 1;
+
+    if (respcode !== successTxn) {
       throw new HttpException(transMessage, HttpStatus.FORBIDDEN);
     }
+
     const smspayload: GenerateSMSBodyDto = {
       mobileno: sendermobileno,
       msg: transMessage,
     };
+
     const payloadForsendSMS = {
       username: process.env.SMS_USERNAME,
       password: process.env.SMS_PASSWORD,
       ...smspayload,
       sender: 'MLWALLET',
     };
+
     const { data: smsResponse } = await axios.post(
-      sms_url + '/sendSMS',
+      config.SMS_URL + '/sendSMS',
       payloadForsendSMS
     );
-    const {
-      code: smsCode,
-      message: smsMessage,
-      mobileno: smsMobile,
-      sender: smsSender,
-    } = smsResponse;
-    if (smsCode !== '1') {
+
+    const { code: smsCode } = smsResponse;
+
+    const smsSuccesscode = '1';
+
+    if (smsCode !== smsSuccesscode) {
       return {
         code: 0,
         message: 'Succesfully process Transaction but unable to send SMS',
