@@ -71,10 +71,10 @@ export class TransactionsService {
 
     return {
       totalTransactions: userHistory.length,
-      currentPage: +page++,
+      currentPage: Number(page),
       transactions: paginatedTransactions,
       nextPage: hasNextPage
-        ? `/transactions/get-transactions-and-paginate/${userID}/?page=${page}&limit=${limit}`
+        ? `/transactions/get-transactions-and-paginate/${userID}/?page=${++page}&limit=${limit}`
         : null,
     };
   }
