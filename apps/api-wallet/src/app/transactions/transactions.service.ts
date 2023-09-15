@@ -53,25 +53,24 @@ export class TransactionsService {
   async getHistoryByUser(
     userID: number,
     page: number,
-    // limit: number,
     limit: number
   ): Promise<any | undefined> {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    const u_history = await this.databaseService.getQueryResult(
+    const userHistory = await this.databaseService.getQueryResult(
       'history_transaction',
       [userID]
     );
 
-    if (!u_history.length) throw new NotFoundException();
+    if (!userHistory.length) throw new NotFoundException();
 
-    const paginatedTransactions = u_history.slice(startIndex, endIndex);
+    const paginatedTransactions = userHistory.slice(startIndex, endIndex);
 
-    const hasNextPage = endIndex < u_history.length;
+    const hasNextPage = endIndex < userHistory.length;
 
     return {
-      totalTransactions: u_history.length,
+      totalTransactions: userHistory.length,
       currentPage: +page++,
       transactions: paginatedTransactions,
       nextPage: hasNextPage
