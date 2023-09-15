@@ -1,31 +1,25 @@
-import axios, { AxiosInstance } from 'axios';
-import { log } from 'console';
+import axios from 'axios';
 import {
   GenerateOtpBodyDto,
   GenerateSMSBodyDto,
-  TransactionalBodyDto,
-  TxnBodyDTO,
   ValidateOtpBodyDTO,
 } from './otp.dto';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { generateSignature } from '../utils/encrypt_service';
-import { TransactionsService } from '../transactions/transactions.service';
+import { config } from '../../constant/config';
 
-const otp_url = process.env.OTP_BASEURL;
-const username = process.env.OTP_USERNAME;
-const password = process.env.OTP_PASSWORD;
 export class OtpService {
-  private readonly transactions: TransactionsService;
   constructor() {}
 
   public async validateOTP(payloadLoad: ValidateOtpBodyDTO): Promise<any> {
-    const { data } = await axios.post(otp_url + '/ValidateOTP', payloadLoad);
+    const { data } = await axios.post(
+      config.OTP_URL + '/ValidateOTP',
+      payloadLoad
+    );
 
-    const { code, message, otp, name, token } = data;
-    if (code !== 1) {
+    const { code } = data;
+    const validateOtpSuccessCode = 1;
+    if (code !== validateOtpSuccessCode) {
       throw new InternalServerErrorException();
     }
     return data;
@@ -34,9 +28,9 @@ export class OtpService {
   public async generateOTP(payloadLoad: GenerateOtpBodyDto) {
     try {
       const signature =
-        username +
+        config.OTP_USERNAME +
         '|' +
-        password +
+        config.OTP_PASSWORD +
         '|' +
         payloadLoad.Mobileno +
         '|' +
@@ -49,32 +43,31 @@ export class OtpService {
         payloadLoad.timelimit;
       const generated = generateSignature(signature);
       if (payloadLoad.Signature !== generated) {
-        console.log('not equal');
         return;
       }
       const payloadForOtpService = {
-        username,
-        password,
+        username: config.OTP_USERNAME,
+        password: config.OTP_PASSWORD,
         ...payloadLoad,
         Signature: generated,
       };
 
       const { data } = await axios.post(
-        otp_url + '/GetDetails',
+        config.OTP_URL + '/GetDetails',
         payloadForOtpService
       );
 
       return data;
     } catch (error) {
-      throw new InternalServerErrorException
+      throw new InternalServerErrorException();
     }
   }
   async sendSMS(payloadLoad: GenerateSMSBodyDto) {
     try {
       const sms_url = process.env.SMS_BASEURL;
       const payloadForsendSMS = {
-        username: process.env.SMS_USERNAME,
-        password: process.env.SMS_PASSWORD,
+        username: config.SMS_USERNAME,
+        password: config.SMS_PASSWORD,
         ...payloadLoad,
         sender: 'MLWALLET',
       };
@@ -84,8 +77,7 @@ export class OtpService {
       );
       return smsResponse;
     } catch (error) {
-      throw new InternalServerErrorException
+      throw new InternalServerErrorException();
     }
   }
 }
-

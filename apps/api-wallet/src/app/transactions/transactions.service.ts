@@ -23,7 +23,7 @@ export class TransactionsService {
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
   private readonly validateOTP: OtpService;
-  async insert(trans_Details: TxnBodyDTO): Promise<any> {
+  async insert(transDetails: TxnBodyDTO): Promise<any> {
     const {
       sendermobileno,
       receivermobileno,
@@ -34,7 +34,7 @@ export class TransactionsService {
       deviceID,
       timelimit,
       tokens,
-    } = trans_Details;
+    } = transDetails;
 
     const validatedetails: ValidateOtpBodyDTO = {
       mobile_no: sendermobileno,
@@ -52,7 +52,9 @@ export class TransactionsService {
 
     const { code: valCode, message: valMessage } = validateResponse;
 
-    if (valCode !== 1) {
+    const valSuccess = 1;
+
+    if (valCode !== valSuccess) {
       throw new HttpException(valMessage, HttpStatus.FORBIDDEN);
     }
 
@@ -79,8 +81,8 @@ export class TransactionsService {
     };
 
     const payloadForsendSMS = {
-      username: process.env.SMS_USERNAME,
-      password: process.env.SMS_PASSWORD,
+      username: config.SMS_USERNAME,
+      password: config.SMS_PASSWORD,
       ...smspayload,
       sender: 'MLWALLET',
     };

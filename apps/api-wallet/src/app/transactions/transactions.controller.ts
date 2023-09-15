@@ -11,9 +11,8 @@ import {
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { AuthGuard } from '@nestjs/passport';
-import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
-import { OtpService } from '../otp/otp.service';
-import { TxnBodyDTO, ValidateOtpBodyDTO } from '../otp/otp.dto';
+
+import { TxnBodyDTO } from '../otp/otp.dto';
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
