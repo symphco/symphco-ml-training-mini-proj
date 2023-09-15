@@ -1,57 +1,103 @@
 import {
-  BadRequestException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
-import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 import { DbTransactions } from '../database/services/db_transaction.util';
 import { OtpService } from '../otp/otp.service';
-import { Validate } from '../utils/validate_otp';
-import { ValidateOtpBodyDTO } from '../otp/otp.dto';
+import {
+  GenerateSMSBodyDto,
+  TxnBodyDTO,
+  ValidateOtpBodyDTO,
+} from '../otp/otp.dto';
+import axios from 'axios';
+
+const otp_url = process.env.OTP_BASEURL;
+const sms_url = process.env.SMS_BASEURL;
 @Injectable()
 export class TransactionsService {
   constructor(
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
-  private readonly validate: Validate;
-  async insert(trans_Details: TransactionDetailsDto): Promise<any> {
-    const { sendermobileno, Deviceid, otp, servicetype, timelimit, token } =
-      trans_Details;
-    console.log({ trans_Details });
-
-    const validatedetails:ValidateOtpBodyDTO = {
+  private readonly validateOTP: OtpService;
+  async insert(trans_Details: TxnBodyDTO): Promise<any> {
+    const {
+      sendermobileno,
+      receivermobileno,
+      amount,
+      servicefee,
+      servicetype,
+      pin,
+      deviceID,
+      timelimit,
+      tokens,
+    } = trans_Details;
+    const validatedetails: ValidateOtpBodyDTO = {
       mobile_no: sendermobileno,
-      deviceID: Deviceid,
-      pin: otp,
+      deviceID: deviceID,
+      pin: pin,
       service_type: servicetype,
       timelimit: timelimit,
-      token: token,
+      token: tokens,
     };
-    console.log({ validatedetails });
-
-    // const validateOTP = await this.otpservice?.validateOTP(validatedetails);
-    const validateotp = this.validate?.validateOTP(validatedetails);
-    console.log('VALIDATEOTP', validateotp);
-    //const { code, message,operator } = validateOTP;
-
-    // if (code == 1 && message == 'Valid') {
-    //   console.log('VALIDATEOTP', validateOTP);
-    //   const user = await DbTransactions.insertTransaction(
-    //     this.databaseService,
-    //     sendermobileno,
-    //     receivermobileno,
-    //     amount,
-    //     servicefee,
-    //     servicetype
-    //   );
-    //   return user;
-    // }
-    // else{
-    //   return validateOTP;
-    // }
+    const { data: validateResponse } = await axios.post(
+      otp_url + '/ValidateOTP',
+      validatedetails
+    );
+    const {
+      code: valCode,
+      message: valMessage,
+      otp: valOTP,
+      name: valName,
+      token: valToken,
+    } = validateResponse;
+    if (valCode !== 1) {
+      throw new HttpException(valMessage, HttpStatus.FORBIDDEN);
+    }
+    const transactionResponse = await DbTransactions.insertTransaction(
+      this.databaseService,
+      sendermobileno,
+      receivermobileno,
+      amount,
+      servicefee,
+      servicetype
+    );
+    const { respcode, respmessage: transMessage } = transactionResponse[0];
+    if (respcode !== 1) {
+      throw new HttpException(transMessage, HttpStatus.FORBIDDEN);
+    }
+    const smspayload: GenerateSMSBodyDto = {
+      mobileno: sendermobileno,
+      msg: transMessage,
+    };
+    const payloadForsendSMS = {
+      username: process.env.SMS_USERNAME,
+      password: process.env.SMS_PASSWORD,
+      ...smspayload,
+      sender: 'MLWALLET',
+    };
+    const { data: smsResponse } = await axios.post(
+      sms_url + '/sendSMS',
+      payloadForsendSMS
+    );
+    const {
+      code: smsCode,
+      message: smsMessage,
+      mobileno: smsMobile,
+      sender: smsSender,
+    } = smsResponse;
+    if (smsCode !== '1') {
+      return {
+        code: 0,
+        message: 'Succesfully process Transaction but unable to send SMS',
+        data: smsResponse,
+      };
+    }
+    return { code: 1, message: 'Succesfully process Transaction ' };
   }
 
   async getMobile(mobile_num: string): Promise<string> {

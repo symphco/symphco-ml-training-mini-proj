@@ -30,27 +30,15 @@ export class TransactionDetailsDto {
   @IsString()
   servicetype: string;
 
-  @IsNotEmpty()
-  @IsString()
-  otp: string;
 
-  @IsNotEmpty()
-  @IsString()
-  Deviceid: string;
 
-  @IsNotEmpty()
-  @IsString()
-  Date: string;
 
-  @IsNotEmpty()
-  @IsString()
-  Signature: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  timelimit: number;
 
-  @IsNotEmpty()
-  @IsString()
-  token: string;
+
+
+
+
+
+
 }

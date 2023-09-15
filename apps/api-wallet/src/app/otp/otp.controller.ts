@@ -11,6 +11,7 @@ import { OtpService } from './otp.service';
 import {
   GenerateOtpBodyDto,
   GenerateSMSBodyDto,
+  TxnBodyDTO,
   ValidateOtpBodyDTO,
 } from './otp.dto';
 

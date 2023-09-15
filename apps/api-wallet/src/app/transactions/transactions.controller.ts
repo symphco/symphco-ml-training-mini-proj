@@ -12,6 +12,8 @@ import {
 import { TransactionsService } from './transactions.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
+import { OtpService } from '../otp/otp.service';
+import { TxnBodyDTO, ValidateOtpBodyDTO } from '../otp/otp.dto';
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
@@ -19,7 +21,7 @@ export class TransactionsController {
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
   @Post('add-transactions')
-  insertTrans(@Body() trans_Details: TransactionDetailsDto): Promise<any> {
+  insertTrans(@Body() trans_Details: TxnBodyDTO): Promise<any> {
     return this.transactionService.insert(trans_Details);
   }
 

@@ -6,6 +6,7 @@ import DB_Config from '../db_config/db.config';
 import { OtpModule } from './otp/otp.module';
 import { AuthModule } from './auth/auth.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
