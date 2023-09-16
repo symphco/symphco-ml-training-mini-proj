@@ -1,100 +1,83 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import axios from 'axios';
 import {
   GenerateOtpBodyDto,
   GenerateSMSBodyDto,
   ValidateOtpBodyDTO,
 } from './otp.dto';
-import { catchError, map } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
 import { generateSignature } from '../utils/encrypt_service';
+import { config } from '../../constant/config';
 
-const username = process.env.OTP_USERNAME;
-const password = process.env.OTP_PASSWORD;
-const otp_url = process.env.OTP_BASEURL;
-@Injectable()
 export class OtpService {
-  constructor(private httpService: HttpService) {}
+  constructor() {}
 
-  async generateOTP(payloadLoad: GenerateOtpBodyDto) {
-    const signature =
-      username +
-      '|' +
-      password +
-      '|' +
-      payloadLoad.Mobileno +
-      '|' +
-      payloadLoad.DeviceID +
-      '|' +
-      payloadLoad.Date +
-      '|' +
-      payloadLoad.ServiceType +
-      '|' +
-      payloadLoad.timelimit;
-    console.log(typeof signature);
-    const generated = generateSignature(signature);
-    if (payloadLoad.Signature !== generated) {
-      console.log('not equal');
-      return;
+  public async validateOTP(payloadLoad: ValidateOtpBodyDTO): Promise<any> {
+    const { data } = await axios.post(
+      config.OTP_URL + '/ValidateOTP',
+      payloadLoad
+    );
+
+    const { code } = data;
+    const validateOtpSuccessCode = 1;
+    if (code !== validateOtpSuccessCode) {
+      throw new InternalServerErrorException();
     }
-    const payloadForOtpService = {
-      username,
-      password,
-      ...payloadLoad,
-      Signature: generated,
-    };
-    return this.httpService
-      .post(otp_url + '/GetDetails', payloadForOtpService)
-
-      .pipe(
-        map((res) => {
-          return res.data;
-        })
-      )
-
-      .pipe(
-        catchError(() => {
-          throw new ForbiddenException('Something went wrong');
-        })
-      );
+    return data;
   }
-  async validateOTP(payloadLoad: ValidateOtpBodyDTO) {
-    return this.httpService
-      .post(otp_url + '/ValidateOTP', payloadLoad)
 
-      .pipe(
-        map((res) => {
-          return res.data;
-        })
-      )
+  public async generateOTP(payloadLoad: GenerateOtpBodyDto) {
+    try {
+      const signature =
+        config.OTP_USERNAME +
+        '|' +
+        config.OTP_PASSWORD +
+        '|' +
+        payloadLoad.Mobileno +
+        '|' +
+        payloadLoad.DeviceID +
+        '|' +
+        payloadLoad.Date +
+        '|' +
+        payloadLoad.ServiceType +
+        '|' +
+        payloadLoad.timelimit;
+      const generated = generateSignature(signature);
+      if (payloadLoad.Signature !== generated) {
+        return;
+      }
+      const payloadForOtpService = {
+        username: config.OTP_USERNAME,
+        password: config.OTP_PASSWORD,
+        ...payloadLoad,
+        Signature: generated,
+      };
 
-      .pipe(
-        catchError(() => {
-          throw new ForbiddenException('Something went wrong');
-        })
+      const { data } = await axios.post(
+        config.OTP_URL + '/GetDetails',
+        payloadForOtpService
       );
+
+      return data;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
   async sendSMS(payloadLoad: GenerateSMSBodyDto) {
-    const sms_url = process.env.SMS_BASEURL;
-    const payloadForsendSMS = {
-      username: process.env.SMS_USERNAME,
-      password: process.env.SMS_PASSWORD,
-      ...payloadLoad,
-      sender: 'MLWALLET',
-    };
-    return this.httpService
-      .post(sms_url + '/sendSMS', payloadForsendSMS)
-
-      .pipe(
-        map((res) => {
-          return res.data;
-        })
-      )
-
-      .pipe(
-        catchError(() => {
-          console.log('error', ForbiddenException);
-          throw new ForbiddenException('Something went wrong');
-        })
+    try {
+      const sms_url = process.env.SMS_BASEURL;
+      const payloadForsendSMS = {
+        username: config.SMS_USERNAME,
+        password: config.SMS_PASSWORD,
+        ...payloadLoad,
+        sender: 'MLWALLET',
+      };
+      const { data: smsResponse } = await axios.post(
+        sms_url + '/sendSMS',
+        payloadForsendSMS
       );
+      return smsResponse;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 }

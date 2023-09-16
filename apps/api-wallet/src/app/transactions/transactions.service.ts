@@ -1,30 +1,68 @@
 import {
-  BadRequestException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
-import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 import { DbTransactions } from '../database/services/db_transaction.util';
+
+import { OtpService } from '../otp/otp.service';
+import {
+  GenerateSMSBodyDto,
+  TxnBodyDTO,
+  ValidateOtpBodyDTO,
+} from '../otp/otp.dto';
+import axios from 'axios';
+import { config } from '../../constant/config';
+
+
 import { NotFoundError } from 'rxjs';
+
 @Injectable()
 export class TransactionsService {
   constructor(
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
-
-  async insert(trans_Details: TransactionDetailsDto): Promise<any> {
+  private readonly validateOTP: OtpService;
+  async insert(transDetails: TxnBodyDTO): Promise<any> {
     const {
       sendermobileno,
       receivermobileno,
       amount,
       servicefee,
       servicetype,
-    } = trans_Details;
+      pin,
+      deviceID,
+      timelimit,
+      tokens,
+    } = transDetails;
 
-    const user = await DbTransactions.insertTransaction(
+    const validatedetails: ValidateOtpBodyDTO = {
+      mobile_no: sendermobileno,
+      deviceID: deviceID,
+      pin: pin,
+      service_type: servicetype,
+      timelimit: timelimit,
+      token: tokens,
+    };
+
+    const { data: validateResponse } = await axios.post(
+      config.OTP_URL + '/ValidateOTP',
+      validatedetails
+    );
+
+    const { code: valCode, message: valMessage } = validateResponse;
+
+    const valSuccess = 1;
+
+    if (valCode !== valSuccess) {
+      throw new HttpException(valMessage, HttpStatus.FORBIDDEN);
+    }
+
+    const transactionResponse = await DbTransactions.insertTransaction(
       this.databaseService,
       sendermobileno,
       receivermobileno,
@@ -32,7 +70,44 @@ export class TransactionsService {
       servicefee,
       servicetype
     );
-    return user;
+
+    const { respcode, respmessage: transMessage } = transactionResponse[0];
+
+    const successTxn = 1;
+
+    if (respcode !== successTxn) {
+      throw new HttpException(transMessage, HttpStatus.FORBIDDEN);
+    }
+
+    const smspayload: GenerateSMSBodyDto = {
+      mobileno: sendermobileno,
+      msg: transMessage,
+    };
+
+    const payloadForsendSMS = {
+      username: config.SMS_USERNAME,
+      password: config.SMS_PASSWORD,
+      ...smspayload,
+      sender: 'MLWALLET',
+    };
+
+    const { data: smsResponse } = await axios.post(
+      config.SMS_URL + '/sendSMS',
+      payloadForsendSMS
+    );
+
+    const { code: smsCode } = smsResponse;
+
+    const smsSuccesscode = '1';
+
+    if (smsCode !== smsSuccesscode) {
+      return {
+        code: 0,
+        message: 'Succesfully process Transaction but unable to send SMS',
+        data: smsResponse,
+      };
+    }
+    return { code: 1, message: 'Succesfully process Transaction ' };
   }
 
   async getMobile(mobile_num: string): Promise<string> {
