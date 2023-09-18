@@ -18,7 +18,6 @@ import {
 import axios from 'axios';
 import { config } from '../../constant/config';
 
-
 import { NotFoundError } from 'rxjs';
 
 @Injectable()
@@ -111,10 +110,11 @@ export class TransactionsService {
   }
 
   async getMobile(mobile_num: string): Promise<string> {
-    const u_num = await this.databaseService.getQueryResult('getMobileNums', [
-      mobile_num,
-    ]);
-    return u_num;
+    const userNumber: string = await this.databaseService.getQueryResult(
+      'getMobileNums',
+      [mobile_num]
+    );
+    return userNumber;
   }
 
   async getHistory(): Promise<any[] | undefined> {
