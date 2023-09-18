@@ -40,7 +40,6 @@ describe('OtpService', () => {
 
       const expectedResponse = {
         code: 1,
-        // Include any other expected properties in the response
       };
 
       const mockResponse: AxiosResponse = {

@@ -43,11 +43,10 @@ export class OtpService {
         payloadLoad.timelimit;
 
       const generated = generateSignature(signature);
-      console.log(generated);
 
-      // if (payloadLoad.Signature !== generated) {
-      //   return;
-      // }
+      if (payloadLoad.Signature !== generated) {
+        return;
+      }
       const payloadForOtpService = {
         username: config.OTP_USERNAME,
         password: config.OTP_PASSWORD,
