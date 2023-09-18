@@ -32,30 +32,42 @@ describe('AuthService', () => {
     jwtService = module.get<JwtService>(JwtService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('validateUser', () => {
-    it('should call walletService.validate with the provided username and password', async () => {
-      const username = 'testuser';
-      const password = 'testpassword';
-      jest.spyOn(walletService, 'validate').mockResolvedValue(42);
+    it('should validate user', async () => {
+      const id = 1;
+      const user = {
+        id,
+        username: 'Richard',
+        password: 'ichad123',
+      };
 
-      const result = await service.validateUser(username, password);
+      const { username, password } = user;
+      jest.spyOn(walletService, 'validateUser').mockResolvedValue(id);
 
-      expect(walletService.validate).toHaveBeenCalledWith(username, password);
-      expect(result).toEqual(42);
+      const result = await service.login(user);
+
+      expect(walletService.validateUser).toHaveBeenCalledWith(
+        username,
+        password
+      );
+      expect(result).toEqual(user.id);
     });
 
-    it('should return null if walletService.validate returns falsy value', async () => {
-      const username = 'testuser';
-      const password = 'testpassword';
-      jest.spyOn(walletService, 'validate').mockResolvedValue(null);
+    it('should return null if returns falsy value', async () => {
+      const user = {
+        username: 'Richard',
+        password: 'ichad123',
+      };
 
-      const result = await service.validateUser(username, password);
+      const { username, password } = user;
+      jest.spyOn(walletService, 'validateUser').mockResolvedValue(null);
 
-      expect(walletService.validate).toHaveBeenCalledWith(username, password);
+      const result = await service.login(user);
+
+      expect(walletService.validateUser).toHaveBeenCalledWith(
+        username,
+        password
+      );
       expect(result).toBeNull();
     });
   });

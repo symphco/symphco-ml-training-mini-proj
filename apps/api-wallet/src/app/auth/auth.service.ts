@@ -1,4 +1,9 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginAuthDto } from '../../dtos/LoginUser.dto';
@@ -10,13 +15,15 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any | null> {
-    const user = await this.walletService.validate(username, password);
-    if (!user) return null;
-    return user;
-  }
-  async login(user: LoginAuthDto): Promise<{ access_token: string }> {
+  async login(user: any): Promise<{ access_token: string } | null> {
     const payload = { username: user.username, sub: user.password };
+    const validUser = await this.walletService.validateUser(
+      payload.username,
+      payload.sub
+    );
+
+    if (!validUser) throw new NotFoundException();
+
     return {
       access_token: this.jwtService.sign(payload),
     };

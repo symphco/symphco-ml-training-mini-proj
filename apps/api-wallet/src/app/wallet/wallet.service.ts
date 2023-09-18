@@ -12,7 +12,7 @@ export class WalletService {
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
 
-  getUsers() {
+  getActiveUsers() {
     const rc = this.databaseService.getQueryResult('getwallet_user', [1]);
     return rc;
   }
@@ -29,11 +29,16 @@ export class WalletService {
     return hasUser;
   }
 
-  async validate(username: string, password: string): Promise<number> {
+  async validateUser(
+    username: string,
+    password: string
+  ): Promise<number | null> {
     const [{ ckycid }] = await this.databaseService.getQueryResult(
       'validateUser',
       [username, password]
     );
+    if (!ckycid) return null;
+
     return ckycid;
   }
 }
