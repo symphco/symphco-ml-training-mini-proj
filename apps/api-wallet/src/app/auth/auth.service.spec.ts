@@ -32,46 +32,6 @@ describe('AuthService', () => {
     jwtService = module.get<JwtService>(JwtService);
   });
 
-  describe('validateUser', () => {
-    it('should validate user', async () => {
-      const id = 1;
-      const user = {
-        id,
-        username: 'Richard',
-        password: 'ichad123',
-      };
-
-      const { username, password } = user;
-      jest.spyOn(walletService, 'validateUser').mockResolvedValue(id);
-
-      const result = await service.login(user);
-
-      expect(walletService.validateUser).toHaveBeenCalledWith(
-        username,
-        password
-      );
-      expect(result).toEqual(user.id);
-    });
-
-    it('should return null if returns falsy value', async () => {
-      const user = {
-        username: 'Richard',
-        password: 'ichad123',
-      };
-
-      const { username, password } = user;
-      jest.spyOn(walletService, 'validateUser').mockResolvedValue(null);
-
-      const result = await service.login(user);
-
-      expect(walletService.validateUser).toHaveBeenCalledWith(
-        username,
-        password
-      );
-      expect(result).toBeNull();
-    });
-  });
-
   describe('login', () => {
     it('should generate a JWT token using jwtService.sign', async () => {
       const user = { username: 'testuser', password: 'testpassword' };

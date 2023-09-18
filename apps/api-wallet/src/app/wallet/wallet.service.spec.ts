@@ -101,22 +101,22 @@ describe('WalletService', () => {
     });
   });
 
-  // describe('validate', () => {
-  //   it('should validate users', async () => {
-  //     const username = 'testuser';
-  //     const password = 'testpassword';
-  //     const queryResult = [{ ckycid: 123 }];
-  //     jest
-  //       .spyOn(databaseService, 'getQueryResult')
-  //       .mockResolvedValueOnce(queryResult);
+  describe('validate', () => {
+    it('should validate users', async () => {
+      const username = 'testuser';
+      const password = 'testpassword';
+      const queryResult = [{ ckycid: 123 }];
+      jest
+        .spyOn(databaseService, 'getQueryResult')
+        .mockResolvedValueOnce(queryResult);
 
-  //     const result = await service.validate(username, password);
+      const result = await service.validateUser(username, password);
 
-  //     expect(databaseService.getQueryResult).toHaveBeenCalledWith(
-  //       'validateUser',
-  //       [username, password]
-  //     );
-  //     expect(result).toEqual(queryResult[0].ckycid);
-  //   });
-  // });
+      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
+        'validateUser',
+        [username, password]
+      );
+      expect(result).toEqual(queryResult[0].ckycid);
+    });
+  });
 });
