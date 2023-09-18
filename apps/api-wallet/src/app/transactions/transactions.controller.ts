@@ -12,11 +12,7 @@ import {
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { AuthGuard } from '@nestjs/passport';
-
-
 import { TxnBodyDTO } from '../otp/otp.dto';
-
-import { TransactionDetailsDto } from '../../dtos/Transaction.dto';
 import { TransHistoryPaginationDto } from '../../dtos/TransHistoryPagination.dto';
 
 @Controller('transactions')

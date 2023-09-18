@@ -41,7 +41,9 @@ export class OtpService {
         payloadLoad.ServiceType +
         '|' +
         payloadLoad.timelimit;
+
       const generated = generateSignature(signature);
+
       if (payloadLoad.Signature !== generated) {
         return;
       }

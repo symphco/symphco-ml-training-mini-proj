@@ -1,6 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtService } from '@nestjs/jwt';
+import { LoginAuthDto } from '../../dtos/LoginUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
     if (!user) return null;
     return user;
   }
-  async login(user: any): Promise<{ access_token: string }> {
+  async login(user: LoginAuthDto): Promise<{ access_token: string }> {
     const payload = { username: user.username, sub: user.password };
     return {
       access_token: this.jwtService.sign(payload),

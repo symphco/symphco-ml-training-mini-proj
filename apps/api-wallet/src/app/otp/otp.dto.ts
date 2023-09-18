@@ -2,10 +2,15 @@ import { IsNotEmpty, IsString, IsNumber, Length } from 'class-validator';
 
 export class GenerateOtpBodyDto {
   Mobileno: string;
+
   DeviceID: string;
+
   Date: string;
+
   ServiceType: string;
+
   Signature: string;
+
   timelimit: number;
 }
 
