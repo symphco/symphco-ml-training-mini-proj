@@ -3,6 +3,8 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { WalletService } from '../wallet/wallet.service';
 import { JwtService } from '@nestjs/jwt';
@@ -15,6 +17,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
+  @UsePipes(ValidationPipe)
   async login(user: LoginAuthDto): Promise<{ access_token: string } | null> {
     const payload = { username: user.username, sub: user.password };
     const validUser = await this.walletService.validate(
