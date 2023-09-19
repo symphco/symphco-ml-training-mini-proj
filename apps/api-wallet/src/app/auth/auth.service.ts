@@ -17,7 +17,7 @@ export class AuthService {
 
   async login(user: LoginAuthDto): Promise<{ access_token: string } | null> {
     const payload = { username: user.username, sub: user.password };
-    const validUser = await this.walletService.validateUser(
+    const validUser = await this.walletService.validate(
       payload.username,
       payload.sub
     );

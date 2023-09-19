@@ -29,10 +29,7 @@ export class WalletService {
     return hasUser;
   }
 
-  async validateUser(
-    username: string,
-    password: string
-  ): Promise<number | null> {
+  async validate(username: string, password: string): Promise<number | null> {
     const [{ ckycid }] = await this.databaseService.getQueryResult(
       'validateUser',
       [username, password]

@@ -101,22 +101,38 @@ describe('WalletService', () => {
     });
   });
 
-  describe('validate', () => {
-    it('should validate users', async () => {
+  describe('validateUser', () => {
+    it('should validate users during login', async () => {
       const username = 'testuser';
       const password = 'testpassword';
-      const queryResult = [{ ckycid: 123 }];
+      const queryResult = [{ ckycid: 1 }];
       jest
         .spyOn(databaseService, 'getQueryResult')
         .mockResolvedValueOnce(queryResult);
 
-      const result = await service.validateUser(username, password);
+      const result = await service.validate(username, password);
 
       expect(databaseService.getQueryResult).toHaveBeenCalledWith(
         'validateUser',
         [username, password]
       );
       expect(result).toEqual(queryResult[0].ckycid);
+    });
+    it('should return null for an invalid user', async () => {
+      const username = 'invaliduser';
+      const password = 'invalidpassword';
+
+      jest
+        .spyOn(databaseService, 'getQueryResult')
+        .mockResolvedValue([{ ckycid: null }]);
+
+      const result = await service.validate(username, password);
+
+      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
+        'validateUser',
+        [username, password]
+      );
+      expect(result).toBeNull();
     });
   });
 });
