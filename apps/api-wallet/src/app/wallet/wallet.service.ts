@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
@@ -29,13 +30,13 @@ export class WalletService {
     return hasUser;
   }
 
-  async validate(username: string, password: string): Promise<number | null> {
+  async validate(username: string, password: string): Promise<number> {
     const [{ ckycid }] = await this.databaseService.getQueryResult(
       'validateUser',
       [username, password]
     );
-    if (!ckycid) return null;
+    if (!ckycid) throw new NotFoundException();
 
-    return ckycid;
+    return;
   }
 }

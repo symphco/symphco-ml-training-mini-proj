@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WalletService } from './wallet.service';
 import { DatabaseService } from '../database/services/db_service';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 describe('WalletService', () => {
   let service: WalletService;
@@ -118,21 +122,23 @@ describe('WalletService', () => {
       );
       expect(result).toEqual(queryResult[0].ckycid);
     });
-    it('should return null for an invalid user', async () => {
+
+    it('should throw NotFoundException if user does not exist', async () => {
       const username = 'invaliduser';
       const password = 'invalidpassword';
 
       jest
         .spyOn(databaseService, 'getQueryResult')
-        .mockResolvedValue([{ ckycid: null }]);
+        .mockResolvedValueOnce([{ ckycid: null }]);
 
-      const result = await service.validate(username, password);
+      await expect(service.validate(username, password)).rejects.toThrow(
+        NotFoundException
+      );
 
       expect(databaseService.getQueryResult).toHaveBeenCalledWith(
         'validateUser',
         [username, password]
       );
-      expect(result).toBeNull();
     });
   });
 });

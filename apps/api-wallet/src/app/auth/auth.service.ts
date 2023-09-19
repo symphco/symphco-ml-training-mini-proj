@@ -18,14 +18,9 @@ export class AuthService {
   ) {}
 
   @UsePipes(ValidationPipe)
-  async login(user: LoginAuthDto): Promise<{ access_token: string } | null> {
+  async login(user: LoginAuthDto): Promise<{ access_token: string }> {
     const payload = { username: user.username, sub: user.password };
-    const validUser = await this.walletService.validate(
-      payload.username,
-      payload.sub
-    );
-
-    if (!validUser) throw new NotFoundException();
+    await this.walletService.validate(payload.username, payload.sub);
 
     return {
       access_token: this.jwtService.sign(payload),
