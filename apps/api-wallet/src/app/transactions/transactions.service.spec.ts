@@ -24,6 +24,26 @@ describe('TransactionsService', () => {
     databaseService = module.get<DatabaseService>('walletmini');
   });
 
+  describe('getHistory', () => {
+    it('should get all history', async () => {
+      const history = [
+        { id: 1, amount: 100 },
+        { id: 2, amount: 200 },
+      ];
+
+      jest.spyOn(databaseService, 'getQueryResult').mockResolvedValue(history);
+
+      const result = await service.getHistory();
+
+      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
+        'getAllHistoryTrans',
+        []
+      );
+
+      expect(result).toBe(history);
+    });
+  });
+
   describe('getHistoryByUser', () => {
     it('should return paginated transaction history for a user', async () => {
       const userID = 1;
@@ -61,6 +81,42 @@ describe('TransactionsService', () => {
       await expect(
         service.getHistoryByUser(userID, page, limit)
       ).rejects.toThrowError(NotFoundException);
+    });
+  });
+
+  describe('getSpecificTrans', () => {
+    it('should get specefic transaction', async () => {
+      const id = 1;
+      const trans_id = 101;
+
+      const transaction = {
+        id,
+        trans_id,
+        name: 'transaction 1',
+      };
+
+      jest
+        .spyOn(databaseService, 'getQueryResult')
+        .mockResolvedValue([transaction]);
+
+      const result = await service.getSpecificTrans(id, trans_id);
+
+      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
+        'getSpecificTrans',
+        [id, trans_id]
+      );
+      expect(result).toBe(transaction);
+    });
+
+    it('should throw not found exception when no transaction', async () => {
+      const id = 1;
+      const trans_id = 101;
+
+      jest.spyOn(databaseService, 'getQueryResult').mockResolvedValue([]);
+
+      await expect(service.getSpecificTrans(id, trans_id)).rejects.toThrowError(
+        NotFoundException
+      );
     });
   });
 });

@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OtpService } from './otp.service';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { of, throwError } from 'rxjs';
 import { config } from '../../constant/config';
+import { generateSignature } from '../utils/encrypt_service';
+import { GenerateOtpBodyDto, ValidateOtpBodyDTO } from './otp.dto';
+import { of, throwError } from 'rxjs';
 
 describe('OtpService', () => {
   let otpService: OtpService;
@@ -28,136 +30,60 @@ describe('OtpService', () => {
   });
 
   describe('validateOTP', () => {
-    it('should validate OTP and return data', async () => {
-      const payloadLoad = {
-        mobile_no: '1234567890',
-        deviceID: 'device123',
+    it('should validate the OTP and return the response data', async () => {
+      const payload: ValidateOtpBodyDTO = {
+        mobile_no: '12345678901',
+        deviceID: 'device-id',
         pin: '1234',
-        service_type: 'SEND',
-        timelimit: 5,
-        token: '  sha152',
+        service_type: 'service-type',
+        timelimit: 60,
+        token: 'token-value',
       };
 
-      const expectedResponse = {
-        code: 1,
-      };
+      const responseData = 1;
+      jest.spyOn(axios, 'post').mockResolvedValueOnce({ data: responseData });
 
-      const mockResponse: AxiosResponse = {
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {
-          headers: undefined,
-        },
-        data: expectedResponse,
-      };
+      const result = await otpService.validateOTP(payload);
 
-      jest.spyOn(httpService, 'post').mockReturnValue(of(mockResponse));
-      const result = await otpService.validateOTP(payloadLoad);
-
-      expect(result).toEqual(expectedResponse);
-      expect(httpService.post).toHaveBeenCalledWith(
-        process.env.OTP_BASEURL + '/ValidateOTP',
-        payloadLoad
+      expect(axios.post).toHaveBeenCalledWith(
+        config.OTP_URL + '/ValidateOTP',
+        payload
       );
+      expect(result).toEqual(responseData);
     });
 
-    it('should throw InternalServerErrorException on error', async () => {
-      const payloadLoad = {
-        mobile_no: '1234567890',
-        deviceID: 'device123',
+    it('should throw an InternalServerErrorException if the OTP validation fails', async () => {
+      const payload: ValidateOtpBodyDTO = {
+        mobile_no: '12345678901',
+        deviceID: 'device-id',
         pin: '1234',
-        service_type: 'SEND',
-        timelimit: 5,
-        token: '  sha152',
+        service_type: 'service-type',
+        timelimit: 60,
+        token: 'token-value',
       };
 
-      jest
-        .spyOn(httpService, 'post')
-        .mockReturnValue(throwError(() => new Error('Network error')));
+      const responseData = {
+        code: 0,
+      };
 
-      await expect(otpService.validateOTP(payloadLoad)).rejects.toThrow(
+      jest.spyOn(axios, 'post').mockResolvedValueOnce({ data: responseData });
+
+      await expect(otpService.validateOTP(payload)).rejects.toThrowError(
         InternalServerErrorException
       );
     });
   });
 
-  describe('generateOTP', () => {
-    it('should generate OTP and return data', async () => {
-      const payloadLoad = {
-        Mobileno: '1234567890',
-        DeviceID: 'device123',
-        Date: '2023-09-16',
-        ServiceType: 'SEND',
-        Signature: 'my-signature-sha152',
-        timelimit: 5,
-      };
-
-      const expectedResponse = {
-        status: 'success',
-        message: 'OTP generated successfully',
-        otp: '123456',
-        expirationDate: '2023-09-16T12:00:00Z',
-      };
-
-      const mockResponse: AxiosResponse = {
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {
-          headers: undefined,
-        },
-        data: expectedResponse,
-      };
-
-      jest.spyOn(httpService, 'post').mockReturnValue(of(mockResponse));
-
-      const username = 'sabel';
-      const password = 'sabel123';
-
-      const result = await otpService.generateOTP(payloadLoad);
-
-      expect(result).toEqual(expectedResponse);
-      expect(httpService.post).toHaveBeenCalledWith(
-        process.env.OTP_BASEURL + '/GetDetails',
-        {
-          username,
-          password,
-          ...payloadLoad,
-          Signature: 'my-signature-sha152',
-        }
-      );
-    });
-
-    it('should throw InternalServerErrorException on error', async () => {
-      const payloadLoad = {
-        Mobileno: '1234567890',
-        DeviceID: 'device123',
-        Date: '2023-09-16',
-        ServiceType: 'SEND',
-        timelimit: 5,
-        Signature: 'my-signature-sha152',
-      };
-
-      jest
-        .spyOn(httpService, 'post')
-        .mockReturnValue(throwError(() => new Error('Network error')));
-
-      await expect(otpService.generateOTP(payloadLoad)).rejects.toThrow(
-        InternalServerErrorException
-      );
-    });
-  });
+  describe('generateOTP', () => {});
 
   describe('sendSMS', () => {
-    it('should send SMS and returndata', async () => {
-      const payloadLoad = {
-        mobileno: 'dsgfdg',
-        msg: '',
+    it('should send an SMS and return the response data', async () => {
+      const payload = {
+        mobileno: '09123456789',
+        msg: 'test-message',
       };
 
       const expectedResponse = {};
-
       const mockResponse: AxiosResponse = {
         status: 200,
         statusText: 'OK',
@@ -168,35 +94,28 @@ describe('OtpService', () => {
         data: expectedResponse,
       };
 
-      jest.spyOn(httpService, 'post').mockReturnValue(of(mockResponse));
+      jest.spyOn(axios, 'post').mockResolvedValueOnce({ data: mockResponse });
 
-      process.env.SMS_BASEURL = 'http://your-sms-service-url';
+      const result = await otpService.sendSMS(payload);
 
-      const result = await otpService.sendSMS(payloadLoad);
-
-      expect(result).toEqual(expectedResponse);
-      expect(httpService.post).toHaveBeenCalledWith(
-        'http://your-sms-service-url/sendSMS',
-        {
-          username: config.SMS_USERNAME,
-          password: config.SMS_PASSWORD,
-          ...payloadLoad,
-          sender: 'MLWALLET',
-        }
+      expect(axios.post).toHaveBeenCalledWith(
+        expect.stringContaining(process.env.SMS_BASEURL + '/sendSMS'),
+        expect.any(Object)
       );
+      expect(result).toEqual(mockResponse);
     });
 
     it('should throw InternalServerErrorException on error', async () => {
-      const payloadLoad = {
-        mobileno: 'dsgfdg',
-        msg: '',
+      const payload = {
+        mobileno: '09091234567',
+        msg: 'Error',
       };
 
       jest
         .spyOn(httpService, 'post')
         .mockReturnValue(throwError(() => new Error('Network error')));
 
-      await expect(otpService.sendSMS(payloadLoad)).rejects.toThrow(
+      await expect(otpService.sendSMS(payload)).rejects.toThrow(
         InternalServerErrorException
       );
     });

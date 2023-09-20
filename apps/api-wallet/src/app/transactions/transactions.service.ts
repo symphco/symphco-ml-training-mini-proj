@@ -26,6 +26,7 @@ export class TransactionsService {
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
   private readonly validateOTP: OtpService;
+
   async insert(transDetails: TxnBodyDTO): Promise<any> {
     const {
       sendermobileno,

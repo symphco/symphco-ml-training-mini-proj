@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WalletService } from './wallet.service';
 import { DatabaseService } from '../database/services/db_service';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 describe('WalletService', () => {
   let service: WalletService;
@@ -24,29 +28,35 @@ describe('WalletService', () => {
     databaseService = module.get<DatabaseService>('walletmini');
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
   describe('getUsers', () => {
-    it('should call databaseService.getQueryResult with the correct parameters', async () => {
-      const queryResult = 'mockedQueryResult';
+    it('should get active users', async () => {
+      const is_active = 1;
+      const queryResult = [
+        {
+          name: 'Richard',
+          is_active: 1,
+        },
+        {
+          name: 'Arce',
+          is_active: 1,
+        },
+      ];
       jest
         .spyOn(databaseService, 'getQueryResult')
         .mockResolvedValueOnce(queryResult);
 
-      const result = await service.getUsers();
+      const result = await service.getActiveUsers();
 
       expect(databaseService.getQueryResult).toHaveBeenCalledWith(
         'getwallet_user',
-        [1]
+        [is_active]
       );
       expect(result).toBe(queryResult);
     });
   });
 
   describe('get_Users', () => {
-    it('should call databaseService.getQueryResult with the correct parameters', async () => {
+    it('should get all users', async () => {
       const queryResult = ['user1', 'user2'];
       jest
         .spyOn(databaseService, 'getQueryResult')
@@ -63,7 +73,7 @@ describe('WalletService', () => {
   });
 
   describe('getUserById', () => {
-    it('should call databaseService.getQueryResult with the correct parameters', async () => {
+    it('should get user by id', async () => {
       const id = 1;
       const queryResult = { id: 1, username: 'testuser' };
       jest
@@ -95,11 +105,11 @@ describe('WalletService', () => {
     });
   });
 
-  describe('validate', () => {
-    it('should call databaseService.getQueryResult with the correct parameters and return ckycid', async () => {
+  describe('validateUser', () => {
+    it('should validate users during login', async () => {
       const username = 'testuser';
       const password = 'testpassword';
-      const queryResult = [{ ckycid: 123 }];
+      const queryResult = [{ ckycid: 1 }];
       jest
         .spyOn(databaseService, 'getQueryResult')
         .mockResolvedValueOnce(queryResult);
@@ -111,6 +121,24 @@ describe('WalletService', () => {
         [username, password]
       );
       expect(result).toEqual(queryResult[0].ckycid);
+    });
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      const username = 'invaliduser';
+      const password = 'invalidpassword';
+
+      jest
+        .spyOn(databaseService, 'getQueryResult')
+        .mockResolvedValueOnce([{ ckycid: null }]);
+
+      await expect(service.validate(username, password)).rejects.toThrow(
+        NotFoundException
+      );
+
+      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
+        'validateUser',
+        [username, password]
+      );
     });
   });
 });

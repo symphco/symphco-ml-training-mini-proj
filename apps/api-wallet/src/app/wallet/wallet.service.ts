@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DatabaseService } from '../database/services/db_service';
@@ -12,7 +13,7 @@ export class WalletService {
     @Inject('walletmini') private readonly databaseService: DatabaseService
   ) {}
 
-  getUsers() {
+  getActiveUsers() {
     const rc = this.databaseService.getQueryResult('getwallet_user', [1]);
     return rc;
   }
@@ -34,6 +35,8 @@ export class WalletService {
       'validateUser',
       [username, password]
     );
-    return ckycid;
+    if (!ckycid) throw new NotFoundException();
+
+    return;
   }
 }
