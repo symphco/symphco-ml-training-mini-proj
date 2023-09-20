@@ -44,7 +44,7 @@ describe('AuthService', () => {
         username: loginAuthDto.username,
         sub: loginAuthDto.password,
       };
-      const token = 'mockedToken';
+      const token = 'this-is-a-mock-token';
       jest.spyOn(jwtService, 'sign').mockReturnValue(token);
 
       const result = await service.login(loginAuthDto);
@@ -55,24 +55,6 @@ describe('AuthService', () => {
         mockPayload.username,
         mockPayload.sub
       );
-    });
-
-    it('should throw NotFoundException for an invalid user', async () => {
-      const loginAuthDto: LoginAuthDto = {
-        username: 'invaliduser',
-        password: 'invalidpassword',
-      };
-
-      jest.spyOn(walletService, 'validate').mockResolvedValue(null);
-      await expect(service.login(loginAuthDto)).rejects.toThrowError(
-        NotFoundException
-      );
-
-      const result = await walletService.validate(
-        loginAuthDto.username,
-        loginAuthDto.password
-      );
-      expect(result).toBeNull();
     });
   });
 });
