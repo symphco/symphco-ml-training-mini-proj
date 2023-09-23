@@ -1,10 +1,8 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
-  Post,
   UseGuards,
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
@@ -15,9 +13,15 @@ export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('active')
+  getActiveUsers(): Promise<any[] | null> {
+    return this.walletService.getActiveUsers();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   getWAlletUsers(): Promise<any[] | undefined> {
-    return this.walletService.get_Users();
+    return this.walletService.getAllUsers();
   }
 
   @UseGuards(AuthGuard('jwt'))

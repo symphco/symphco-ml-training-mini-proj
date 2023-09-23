@@ -6,7 +6,7 @@ import { LoginAuthDto } from '../../dtos/LoginUser.dto';
 import { NotFoundException } from '@nestjs/common';
 
 describe('AuthService', () => {
-  let service: AuthService;
+  let authService: AuthService;
   let walletService: WalletService;
   let jwtService: JwtService;
 
@@ -29,7 +29,7 @@ describe('AuthService', () => {
       ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
+    authService = module.get<AuthService>(AuthService);
     walletService = module.get<WalletService>(WalletService);
     jwtService = module.get<JwtService>(JwtService);
   });
@@ -40,14 +40,17 @@ describe('AuthService', () => {
         username: 'testuser',
         password: 'testpassword',
       };
+
       const mockPayload = {
         username: loginAuthDto.username,
         sub: loginAuthDto.password,
       };
+
       const token = 'this-is-a-mock-token';
+
       jest.spyOn(jwtService, 'sign').mockReturnValue(token);
 
-      const result = await service.login(loginAuthDto);
+      const result = await authService.login(loginAuthDto);
 
       expect(jwtService.sign).toHaveBeenCalledWith(mockPayload);
       expect(result).toEqual({ access_token: token });

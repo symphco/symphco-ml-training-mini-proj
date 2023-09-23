@@ -1,11 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WalletService } from './wallet.service';
 import { DatabaseService } from '../database/services/db_service';
-import {
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('WalletService', () => {
   let service: WalletService;
@@ -53,22 +49,43 @@ describe('WalletService', () => {
       );
       expect(result).toBe(queryResult);
     });
-  });
 
-  describe('get_Users', () => {
-    it('should get all users', async () => {
-      const queryResult = ['user1', 'user2'];
+    it('should throw NotFoundException if no active users in DB', async () => {
       jest
         .spyOn(databaseService, 'getQueryResult')
-        .mockResolvedValueOnce(queryResult);
+        .mockRejectedValueOnce(new Error('No users found'));
 
-      const result = await service.get_Users();
-
-      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
-        'getUsers',
-        []
+      await expect(service.getActiveUsers()).rejects.toThrow(
+        new NotFoundException('No users found')
       );
-      expect(result).toEqual(queryResult);
+    });
+  });
+
+  describe('getAllUsers', () => {
+    it('should return all users', async () => {
+      jest
+        .spyOn(service['databaseService'], 'getQueryResult')
+        .mockResolvedValueOnce([
+          { id: 1, name: 'User 1' },
+          { id: 2, name: 'User 2' },
+        ]);
+
+      const result = await service.getAllUsers();
+
+      expect(result).toEqual([
+        { id: 1, name: 'User 1' },
+        { id: 2, name: 'User 2' },
+      ]);
+    });
+
+    it('should throw NotFoundException if no users are found', async () => {
+      jest
+        .spyOn(databaseService, 'getQueryResult')
+        .mockRejectedValueOnce(new Error('No users found'));
+
+      await expect(service.getAllUsers()).rejects.toThrow(
+        new NotFoundException('No users found')
+      );
     });
   });
 
@@ -89,15 +106,13 @@ describe('WalletService', () => {
       expect(result).toEqual(queryResult);
     });
 
-    it('should throw UnauthorizedException if user does not exist', async () => {
+    it('should throw NotFoundException if user does not exist', async () => {
       const id = 1;
       jest
         .spyOn(databaseService, 'getQueryResult')
         .mockResolvedValueOnce(undefined);
 
-      await expect(service.getUserById(id)).rejects.toThrow(
-        UnauthorizedException
-      );
+      await expect(service.getUserById(id)).rejects.toThrow(NotFoundException);
       expect(databaseService.getQueryResult).toHaveBeenCalledWith(
         'getUserById',
         [id]

@@ -18,8 +18,6 @@ import {
 import axios from 'axios';
 import { config } from '../../constant/config';
 
-import { NotFoundError } from 'rxjs';
-
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -110,61 +108,56 @@ export class TransactionsService {
     return { code: 1, message: 'Succesfully process Transaction ' };
   }
 
-  async getMobile(mobile_num: string): Promise<string> {
-    const userNumber: string = await this.databaseService.getQueryResult(
-      'getMobileNums',
-      [mobile_num]
-    );
-    return userNumber;
-  }
-
-  async getHistory(): Promise<any[] | undefined> {
-    const history = await this.databaseService.getQueryResult(
-      'getAllHistoryTrans',
-      []
-    );
-    return history;
-  }
-
   async getHistoryByUser(
     userID: number,
     page: number,
     limit: number
   ): Promise<any | undefined> {
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+    try {
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
 
-    const userHistory = await this.databaseService.getQueryResult(
-      'history_transaction',
-      [userID]
-    );
+      const userHistory = await this.databaseService.getQueryResult(
+        'history_transaction',
+        [userID]
+      );
 
-    if (!userHistory.length) throw new NotFoundException();
+      if (!userHistory.length)
+        throw new NotFoundException('You do not have any transactions/s yet!');
 
-    const paginatedTransactions = userHistory.slice(startIndex, endIndex);
+      const paginatedTransactions = userHistory.slice(startIndex, endIndex);
 
-    const hasNextPage = endIndex < userHistory.length;
+      const hasNextPage = endIndex < userHistory.length;
 
-    return {
-      totalTransactions: userHistory.length,
-      currentPage: Number(page),
-      transactions: paginatedTransactions,
-      nextPage: hasNextPage
-        ? `/transactions/get-transactions-and-paginate/${userID}/?page=${++page}&limit=${limit}`
-        : null,
-    };
+      return {
+        totalTransactions: userHistory.length,
+        currentPage: Number(page),
+        transactions: paginatedTransactions,
+        nextPage: hasNextPage
+          ? `/transactions/get-transactions-and-paginate/${userID}/?page=${++page}&limit=${limit}`
+          : null,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getSpecificTrans(
     userID: number,
     transID: number
   ): Promise<any | undefined> {
-    const [spec_trans] = await this.databaseService.getQueryResult(
-      'getSpecificTrans',
-      [userID, transID]
-    );
-    if (!spec_trans) throw new NotFoundException();
+    try {
+      const [spec_trans] = await this.databaseService.getQueryResult(
+        'getSpecificTrans',
+        [userID, transID]
+      );
 
-    return spec_trans;
+      if (!spec_trans)
+        throw new NotFoundException(`Transaction #${transID} Not Found!`);
+
+      return spec_trans;
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
 import { DatabaseService } from '../database/services/db_service';
-import { NotFoundException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe('TransactionsService', () => {
   let service: TransactionsService;
@@ -22,26 +25,6 @@ describe('TransactionsService', () => {
 
     service = module.get<TransactionsService>(TransactionsService);
     databaseService = module.get<DatabaseService>('walletmini');
-  });
-
-  describe('getHistory', () => {
-    it('should get all history', async () => {
-      const history = [
-        { id: 1, amount: 100 },
-        { id: 2, amount: 200 },
-      ];
-
-      jest.spyOn(databaseService, 'getQueryResult').mockResolvedValue(history);
-
-      const result = await service.getHistory();
-
-      expect(databaseService.getQueryResult).toHaveBeenCalledWith(
-        'getAllHistoryTrans',
-        []
-      );
-
-      expect(result).toBe(history);
-    });
   });
 
   describe('getHistoryByUser', () => {

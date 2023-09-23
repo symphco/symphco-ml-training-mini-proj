@@ -27,12 +27,6 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('get-transactions')
-  getTransHistory(): Promise<any[] | undefined> {
-    return this.transactionService.getHistory();
-  }
-
-  @UseGuards(AuthGuard('jwt'))
   @Get('get-transactions-and-paginate/:userID')
   getTransHistoryByUser(
     @Param('userID', ParseIntPipe) userID: number,
