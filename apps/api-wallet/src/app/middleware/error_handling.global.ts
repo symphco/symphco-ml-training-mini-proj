@@ -4,6 +4,7 @@ import {
   ArgumentsHost,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -21,7 +22,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof UnauthorizedException) {
       response
         .status(401)
-        .json({ error: 'Unauthorized', message: exception.message });
+        .json({ error: 'Unauthorized', message: 'Login Required' });
+    } else if (exception instanceof BadRequestException) {
+      response.status(400).json({
+        error: 'Bad Request',
+        message: 'All fields must not be empty',
+      });
     } else {
       response.status(500).json({
         error: 'Internal Server Error',

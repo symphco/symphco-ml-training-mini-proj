@@ -129,7 +129,7 @@ export class TransactionsService {
 
       const hasNextPage = endIndex < userHistory.length;
 
-      return {
+      const data = {
         totalTransactions: userHistory.length,
         currentPage: Number(page),
         transactions: paginatedTransactions,
@@ -137,6 +137,8 @@ export class TransactionsService {
           ? `/transactions/get-transactions-and-paginate/${userID}/?page=${++page}&limit=${limit}`
           : null,
       };
+
+      return data;
     } catch (error) {
       throw error;
     }
